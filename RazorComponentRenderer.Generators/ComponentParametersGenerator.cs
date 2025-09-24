@@ -98,7 +98,7 @@ public class ComponentParametersGenerator : IIncrementalGenerator
             try
             {
                 spc.AddSource(
-                    Path.GetFileNameWithoutExtension(className) + "Props.g.cs",
+                    Path.GetFileNameWithoutExtension(className) + ".g.cs",
                     SourceText.From(codeBuilder.ToString(), Encoding.UTF8)
                 );
             }
