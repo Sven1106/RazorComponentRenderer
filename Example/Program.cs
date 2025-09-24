@@ -1,4 +1,4 @@
-using Example.Components;
+using Example;
 using RazorComponentRenderer;
 using RazorComponentRenderer.DependencyInjection.ServiceCollectionExtensionMethods;
 

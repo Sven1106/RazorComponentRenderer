@@ -7,7 +7,7 @@
 
         <!-- NuGet Package Properties -->
         <PackageId>RazorComponentRenderer</PackageId>
-        <PackageVersion>1.0.0</PackageVersion>
+        <PackageVersion>1.0.1</PackageVersion>
         <Authors>Svend</Authors>
         <Description>A library for rendering Razor components to HTML strings with automatic parameter generation.</Description>
         <PackageTags>razor;components;rendering;html</PackageTags>

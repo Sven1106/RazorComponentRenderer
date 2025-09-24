@@ -112,32 +112,33 @@ public class ComponentParametersGenerator : IIncrementalGenerator
     private static string CalculateRazorNamespace(string filePath, string? rootNamespace)
     {
         var baseNamespace = rootNamespace ?? "App";
-        var relativePath = GetRelativeNamespacePath(filePath, baseNamespace);
-        return string.IsNullOrEmpty(relativePath) ? baseNamespace : $"{baseNamespace}.{relativePath}";
-    }
-
-    private static string GetRelativeNamespacePath(string filePath, string rootNamespace)
-    {
+        
+        // Get the directory containing the file
         var directory = Path.GetDirectoryName(filePath);
-        if (string.IsNullOrEmpty(directory)) return string.Empty;
+        if (string.IsNullOrEmpty(directory)) 
+            return baseNamespace;
 
         var parts = directory.Split([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar], StringSplitOptions.RemoveEmptyEntries);
-
-        var projectIndex = Array.FindIndex(parts, part =>
-            string.Equals(part, rootNamespace, StringComparison.OrdinalIgnoreCase));
-
-        if (projectIndex >= 0 && projectIndex < parts.Length - 1)
+        
+        // Find where the project root is by looking for the project name in the path
+        var projectRootIndex = -1;
+        for (int i = parts.Length - 1; i >= 0; i--)
         {
-            var namespaceParts = parts.Skip(projectIndex + 1);
-            return string.Join(".", namespaceParts);
+            if (string.Equals(parts[i], baseNamespace, StringComparison.OrdinalIgnoreCase))
+            {
+                projectRootIndex = i;
+                break;
+            }
         }
-
-        if (parts.Length >= 2)
+        
+        // If we found the project root, use everything after it
+        if (projectRootIndex >= 0 && projectRootIndex < parts.Length - 1)
         {
-            return string.Join(".", parts.Skip(parts.Length - 2));
+            var namespaceParts = parts.Skip(projectRootIndex + 1);
+            return $"{baseNamespace}.{string.Join(".", namespaceParts)}";
         }
-
-        return parts.Length > 0 ? parts[parts.Length - 1] : string.Empty;
+        
+        return baseNamespace;
     }
 
     private static string? ExtractNamespaceDirective(string content)
