@@ -1,5 +1,33 @@
+# .NET build output
 bin/
 obj/
+out/
+
+# NuGet packages
 /packages/
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+
+# Rider / IntelliJ IDEA
+.idea/
+*.iml
 riderModule.iml
 /_ReSharper.Caches/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
