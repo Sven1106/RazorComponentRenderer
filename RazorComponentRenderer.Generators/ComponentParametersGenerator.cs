@@ -72,6 +72,13 @@ public class ComponentParametersGenerator : IIncrementalGenerator
                         .SelectMany(a => a.Attributes)
                         .Any(attr => attr.Name.ToString() == "Parameter" || attr.Name.ToString().EndsWith(".Parameter"))
                 )
+                .OrderByDescending(x => x.Modifiers.Any(m => m.IsKind(SyntaxKind.RequiredKeyword)))
+                .Select(x => (
+                    x.Type,
+                    identifierName: x.Identifier,
+                    isOptional: !x.Modifiers.Any(m => m.IsKind(SyntaxKind.RequiredKeyword)),
+                    defaultValue: x.Initializer is not null ? x.Initializer.Value.ToString() : "default")
+                )
                 .ToList();
             var codeBuilder = new StringBuilder();
             codeBuilder.AppendLine($$"""
@@ -85,10 +92,10 @@ public class ComponentParametersGenerator : IIncrementalGenerator
                                      {
                                          public partial class {{className}}
                                          {
-                                             public static ComponentParameters<{{className}}> CreateComponentParameters({{string.Join(", ", properties.Select(x => $"{x.Type.ToString()} {char.ToLowerInvariant(x.Identifier.Text[0]) + x.Identifier.Text.Substring(1)}"))}}) => new(
+                                             public static ComponentParameters<{{className}}> CreateComponentParameters({{string.Join(", ", properties.Select(x => $"{x.Type.ToString()} {x.identifierName}{(x.isOptional ? $" = {x.defaultValue}" : "")}"))}}) => new(
                                                  new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
                                                  {
-                                                     {{string.Join(", ", properties.Select(x => $"[nameof({char.ToLowerInvariant(x.Identifier.Text[0]) + x.Identifier.Text.Substring(1)})] = {char.ToLowerInvariant(x.Identifier.Text[0]) + x.Identifier.Text.Substring(1)}"))}}
+                                                     {{string.Join(", \n                ", properties.Select(x => $"[nameof({x.identifierName})] = {x.identifierName}"))}}
                                                  }
                                              );
                                          }
@@ -112,14 +119,14 @@ public class ComponentParametersGenerator : IIncrementalGenerator
     private static string CalculateRazorNamespace(string filePath, string? rootNamespace)
     {
         var baseNamespace = rootNamespace ?? "App";
-        
+
         // Get the directory containing the file
         var directory = Path.GetDirectoryName(filePath);
-        if (string.IsNullOrEmpty(directory)) 
+        if (string.IsNullOrEmpty(directory))
             return baseNamespace;
 
         var parts = directory.Split([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar], StringSplitOptions.RemoveEmptyEntries);
-        
+
         // Find where the project root is by looking for the project name in the path
         var projectRootIndex = -1;
         for (int i = parts.Length - 1; i >= 0; i--)
@@ -130,14 +137,14 @@ public class ComponentParametersGenerator : IIncrementalGenerator
                 break;
             }
         }
-        
+
         // If we found the project root, use everything after it
         if (projectRootIndex >= 0 && projectRootIndex < parts.Length - 1)
         {
             var namespaceParts = parts.Skip(projectRootIndex + 1);
             return $"{baseNamespace}.{string.Join(".", namespaceParts)}";
         }
-        
+
         return baseNamespace;
     }
 

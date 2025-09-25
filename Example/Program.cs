@@ -11,8 +11,7 @@ app.MapGet("/", () => Results.Redirect("/hello"));
 
 app.MapGet("/hello", async (RazorComponentRendererService renderer, string? name) =>
 {
-    var html = await renderer.RenderComponent(HelloWorld.CreateComponentParameters(name: name));
-
+    var html = await renderer.RenderComponent(HelloWorld.CreateComponentParameters(Name: name));
     return Results.Content(html, "text/html");
 });
 
