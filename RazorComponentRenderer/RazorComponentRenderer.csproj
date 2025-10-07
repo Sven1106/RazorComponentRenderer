@@ -7,7 +7,7 @@
 
         <!-- NuGet Package Properties -->
         <PackageId>RazorComponentRenderer</PackageId>
-        <PackageVersion>1.0.2</PackageVersion>
+        <PackageVersion>1.0.3</PackageVersion>
         <Authors>Svend</Authors>
         <Description>A library for rendering Razor components to HTML strings with automatic parameter generation.</Description>
         <PackageTags>razor;components;rendering;html</PackageTags>
@@ -18,7 +18,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.9" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.9"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.9" />
+        <PackageReference Include="Microsoft.AspNetCore.Antiforgery" Version="2.3.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0"/>
     </ItemGroup>
 
     <!-- Include the generator project output in this package -->

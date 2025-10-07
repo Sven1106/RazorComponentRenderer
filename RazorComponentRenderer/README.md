@@ -1,30 +1,34 @@
-﻿# RazorComponentRenderer
+# RazorComponentRenderer
 
 A lightweight utility for rendering Razor components to HTML with a focus on simplicity and type safety.
 
 ## Features
 
 - Render Razor components to HTML strings programmatically.
-- Integrate easily with ASP.NET Core DI via extension methods.
+- Seamless ASP.NET Core DI via extension methods.
 - Get strongly‑typed component parameters without extra setup:
     - `CreateComponentParameters(...)` methods are generated automatically for each Razor component.
     - Full IntelliSense support and compile‑time validation of names and types.
-    - Zero runtime reflection or overhead (code is generated at build time).
+    - Zero runtime reflections or overhead (code is generated at build time).
+- Support for EditForm, InputText, NavLink, AntiforgeryToken, and other Blazor
+  components.
+- Includes NavigationManager for URI/routing information during static rendering.
 
 ## Installation
-```bash 
+
+```bash
 dotnet add package RazorComponentRenderer
 ```
 
 ## Quick start
 
-1) Register services:
+1. Register services:
 
 ```csharp
 builder.Services.AddRazorComponentRenderer();
-``` 
+```
 
-2) Create a component:
+2. Create a component:
 
 ```razor
 @* HelloWorld.razor *@
@@ -36,16 +40,25 @@ builder.Services.AddRazorComponentRenderer();
 }
 ```
 
-3) Render the component:
+3. Render the component:
 
 ```csharp
 app.MapGet("/hello", async (RazorComponentRendererService renderer, string? name) =>
 {
-    var html = await renderer.RenderComponent(HelloWorld.CreateComponentParameters(name: name));
+    var html = await renderer.RenderComponent(HelloWorld.CreateComponentParameters(Name: name));
 
-    return Results.Content(html, "text/html");
+    return Results.Content(html, "text/html; charset=utf-8");
 });
 ```
+
+## Available Services
+
+The `AddRazorComponentRenderer()` extension automatically registers:
+
+- `RazorComponentRendererService` - Core rendering service
+- `NavigationManager` - For URI/routing information
+- `AntiforgeryStateProvider` - For CSRF protection
+- `JSRuntime` - Provides clear error messages for JavaScript operations
 
 ## License
 
